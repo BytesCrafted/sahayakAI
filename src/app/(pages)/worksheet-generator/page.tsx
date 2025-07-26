@@ -29,7 +29,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 const FormSchema = z.object({
   image: z
     .any()
-    .refine((file) => file?.name, "Image is required.")
+    .refine((file) => !!file, "Image is required.")
     .refine(
       (file) => file?.size <= MAX_FILE_SIZE,
       `Max file size is 5MB.`
@@ -49,7 +49,7 @@ export default function GenerateWorksheetPage() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      image: null,
+      image: undefined,
     },
   });
   
@@ -65,7 +65,7 @@ export default function GenerateWorksheetPage() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      form.setValue("image", file);
+      form.setValue("image", file, { shouldValidate: true });
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -155,7 +155,7 @@ export default function GenerateWorksheetPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={loading || !form.formState.isValid} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
+                  <Button type="submit" disabled={!form.formState.isValid || loading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
