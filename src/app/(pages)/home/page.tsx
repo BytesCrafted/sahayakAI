@@ -52,7 +52,7 @@ export default function HomePage() {
           setClassrooms(classroomsData);
 
           // Fetch contents
-          const contentsQuery = query(collection(db, "contents"), where("teacher_id", "==", user.uid));
+          const contentsQuery = query(collection(db, "contents"), where("created_by", "==", user.uid));
           const contentsSnapshot = await getDocs(contentsQuery);
           const contentsData = contentsSnapshot.docs.map((doc) => ({
             id: doc.id,
