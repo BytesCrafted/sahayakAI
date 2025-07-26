@@ -12,9 +12,9 @@ if (!privateKey) {
   throw new Error("FIREBASE_PRIVATE_KEY environment variable is not set.");
 }
 
-const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+const projectId = process.env.projectId;
 if (!projectId) {
-    throw new Error("NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is not set.");
+    throw new Error("projectId environment variable is not set.");
 }
 
 // Initialize Firebase Admin SDK
