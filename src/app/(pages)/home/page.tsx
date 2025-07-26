@@ -25,6 +25,12 @@ interface Content {
   subject: string;
   grade: string;
   url: string;
+  content_data?: {
+    url?: string;
+    topic?: string;
+    subject?: string;
+    grade?: string;
+  }
 }
 
 type GroupedContent = {
@@ -153,14 +159,14 @@ export default function HomePage() {
                       {items.map((item) => (
                         <Card key={item.id} className="flex flex-col">
                           <CardHeader>
-                            <CardTitle>{item.topic || 'Untitled'}</CardTitle>
+                            <CardTitle>{item.topic || item.content_data?.topic || 'Untitled'}</CardTitle>
                              <CardDescription>
-                              {item.subject} - Grade {item.grade}
+                              {item.subject || item.content_data?.subject} - Grade {item.grade || item.content_data?.grade}
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="flex-grow flex flex-col justify-end">
                             <Button asChild variant="outline" className="mt-auto">
-                              <Link href={item.url} target="_blank" rel="noopener noreferrer">
+                              <Link href={item.url || item.content_data?.url || '#'} target="_blank" rel="noopener noreferrer">
                                 <BookOpen className="mr-2 h-4 w-4" />
                                 View Content
                               </Link>
