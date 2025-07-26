@@ -20,22 +20,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-
-const API_BASE_URL = "http://146.148.56.108:8000";
+import { generateWorksheetFromImage } from "@/ai/flows/generate-worksheet-from-image";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 
 const FormSchema = z.object({
   image: z
-    .instanceof(File)
-    .refine((file) => file.size > 0, "Image is required.")
+    .any()
+    .refine((file) => file?.size, "Image is required.")
     .refine(
-      (file) => file.size <= MAX_FILE_SIZE,
+      (file) => file?.size <= MAX_FILE_SIZE,
       `Max file size is 5MB.`
     )
     .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
       "Only .jpg and .png files are accepted."
     ),
 });
@@ -49,6 +48,15 @@ export default function GenerateWorksheetPage() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+  
+  const toDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -66,20 +74,10 @@ export default function GenerateWorksheetPage() {
     setLoading(true);
     setResultUrl("");
 
-    const formData = new FormData();
-    formData.append("image", data.image);
-
     try {
-      const response = await fetch(`${API_BASE_URL}/generate_worksheet_from_image`, {
-        method: "POST",
-        body: formData,
-      });
+      const imageDataUri = await toDataURL(data.image);
+      const result = await generateWorksheetFromImage({ imageDataUri });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
       if (result.url) {
         setResultUrl(result.url);
         toast({
