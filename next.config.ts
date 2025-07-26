@@ -1,4 +1,8 @@
 import type {NextConfig} from 'next';
+import { config } from 'dotenv';
+
+// Load environment variables from .env file
+config({ path: './.env' });
 
 // Added this comment to trigger a server reload and fix a chunk loading issue.
 const nextConfig: NextConfig = {
