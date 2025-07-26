@@ -27,7 +27,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -54,7 +54,13 @@ export default function LoginPage() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      // Update last login time
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { lastLogin: new Date() }, { merge: true });
+
       toast({
         title: "Success",
         description: "Logged in successfully!",
@@ -79,15 +85,22 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Create user profile in Firestore if it doesn't exist
+      // Create or update user profile in Firestore
       const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, {
-        name: user.displayName,
-        email: user.email,
-        role: "teacher",
-        createdAt: new Date(),
-        lastLogin: new Date(),
-      }, { merge: true });
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          name: user.displayName,
+          email: user.email,
+          role: "teacher",
+          createdAt: new Date(),
+          lastLogin: new Date(),
+        });
+      } else {
+        await setDoc(userRef, { lastLogin: new Date() }, { merge: true });
+      }
+
 
       toast({
         title: "Success",

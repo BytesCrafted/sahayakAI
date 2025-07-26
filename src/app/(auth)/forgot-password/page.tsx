@@ -30,6 +30,7 @@ const FormSchema = z.object({
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,6 +44,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       await sendPasswordResetEmail(auth, data.email);
+      setSent(true);
       toast({
         title: "Password Reset Email Sent",
         description: "Please check your inbox for password reset instructions.",
@@ -64,40 +66,48 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md p-8 space-y-8">
         <PageHeader
           title="Forgot Password"
-          description="Enter your email to receive a password reset link."
+          description={sent ? "Check your email." : "Enter your email to receive a password reset link."}
         />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="e.g., you@example.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-accent hover:bg-accent/90"
-            >
-              {loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Send Reset Link"
-              )}
-            </Button>
-          </form>
-        </Form>
+        {sent ? (
+          <div className="text-center">
+             <p className="text-muted-foreground">
+              An email has been sent to your registered address with instructions on how to reset your password.
+             </p>
+          </div>
+        ) : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="e.g., you@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent hover:bg-accent/90"
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Send Reset Link"
+                )}
+              </Button>
+            </form>
+          </Form>
+        )}
         <div className="text-center">
           <Link
             href="/login"

@@ -28,7 +28,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 const FormSchema = z.object({
   displayName: z.string().min(3, {
@@ -104,15 +104,21 @@ export default function SignupPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Create user profile in Firestore
+      // Create or update user profile in Firestore
       const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, {
-        name: user.displayName,
-        email: user.email,
-        role: "teacher",
-        createdAt: new Date(),
-        lastLogin: new Date(),
-      }, { merge: true });
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          name: user.displayName,
+          email: user.email,
+          role: "teacher",
+          createdAt: new Date(),
+          lastLogin: new Date(),
+        });
+      } else {
+         await setDoc(userRef, { lastLogin: new Date() }, { merge: true });
+      }
 
       toast({
         title: "Success",
