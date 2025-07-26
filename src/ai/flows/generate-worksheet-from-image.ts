@@ -20,6 +20,8 @@ const GenerateWorksheetFromImageInputSchema = z.object({
       "An image to generate a worksheet from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   image_filename: z.string(),
+  grade: z.string(),
+  subject: z.string(),
 });
 export type GenerateWorksheetFromImageInput = z.infer<
   typeof GenerateWorksheetFromImageInputSchema
@@ -45,12 +47,25 @@ const generateWorksheetFromImageFlow = ai.defineFlow(
     outputSchema: GenerateWorksheetFromImageOutputSchema,
   },
   async (input) => {
+    // The backend expects a raw base64 string, not a data URI.
+    // We need to strip the prefix "data:<mimetype>;base64,".
+    const base64Data = input.image_base64.substring(
+      input.image_base64.indexOf(',') + 1
+    );
+
+    const payload = {
+      image_base64: base64Data,
+      image_filename: input.image_filename,
+      grade: input.grade,
+      subject: input.subject,
+    };
+
     const response = await fetch(`${API_BASE_URL}/generate_worksheet_from_image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(input),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
