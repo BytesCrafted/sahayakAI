@@ -21,6 +21,14 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { generateWorksheetFromImage } from "@/ai/flows/generate-worksheet-from-image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
@@ -69,9 +77,7 @@ export default function GenerateWorksheetPage() {
     const file = event.target.files?.[0];
     if (file) {
       // Manually set the value for react-hook-form
-      const fileList = new DataTransfer();
-      fileList.items.add(file);
-      form.setValue("image", fileList.files, { shouldValidate: true });
+      form.setValue("image", event.target.files, { shouldValidate: true });
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -188,9 +194,23 @@ export default function GenerateWorksheetPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Grade</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., 5th Grade" {...field} />
-                        </FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a grade" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {[...Array(12)].map((_, i) => (
+                              <SelectItem key={i + 1} value={`${i + 1}`}>
+                                Grade {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
