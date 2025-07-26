@@ -59,7 +59,10 @@ export default function LoginPage() {
       const user = userCredential.user;
       const idToken = await user.getIdToken();
       
-      await sessionLogin(idToken);
+      const sessionResult = await sessionLogin(idToken);
+      if (!sessionResult.success) {
+        throw new Error(sessionResult.error || 'Failed to create session.');
+      }
 
       // Update last login time
       const userRef = doc(db, "users", user.uid);
@@ -90,7 +93,10 @@ export default function LoginPage() {
       const user = result.user;
       const idToken = await user.getIdToken();
 
-      await sessionLogin(idToken);
+      const sessionResult = await sessionLogin(idToken);
+       if (!sessionResult.success) {
+        throw new Error(sessionResult.error || 'Failed to create session.');
+      }
 
       // Create or update user profile in Firestore
       const userRef = doc(db, "users", user.uid);
@@ -119,7 +125,7 @@ export default function LoginPage() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to sign in with Google. Please try again.",
+        description: error.message || "Failed to sign in with Google. Please try again.",
       });
     } finally {
       setLoading(false);
