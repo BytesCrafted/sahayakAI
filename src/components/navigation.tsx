@@ -10,6 +10,7 @@ import {
   FlaskConical,
   User,
   ChevronDown,
+  BookOpen,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -47,6 +48,11 @@ const navItems = [
         href: "/content/lesson-plan",
         icon: FileText,
         label: "Lesson Plan Generator",
+      },
+      {
+        href: "/generate-study-material",
+        icon: BookOpen,
+        label: "Study Material",
       },
     ],
   },
