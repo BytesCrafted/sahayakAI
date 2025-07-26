@@ -69,7 +69,7 @@ export default function LoginPage() {
         title: "Success",
         description: "Logged in successfully!",
       });
-      router.push("/dashboard");
+      router.push("/home");
     } catch (error: any) {
       console.error(error);
       toast({
@@ -113,7 +113,7 @@ export default function LoginPage() {
         title: "Success",
         description: "Logged in with Google successfully!",
       });
-      router.push("/dashboard");
+      router.push("/home");
     } catch (error: any) {
       console.error(error);
       toast({

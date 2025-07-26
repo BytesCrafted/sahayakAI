@@ -54,7 +54,7 @@ const askSahayakFlow = ai.defineFlow(
     outputSchema: AskSahayakOutputSchema,
   },
   async (input) => {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('__session')?.value;
 
     if (!token) {

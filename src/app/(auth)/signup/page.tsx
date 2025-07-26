@@ -88,7 +88,7 @@ export default function SignupPage() {
         title: "Success",
         description: "Account created successfully!",
       });
-      router.push("/dashboard");
+      router.push("/home");
     } catch (error: any) {
       console.error(error);
       toast({
@@ -131,7 +131,7 @@ export default function SignupPage() {
         title: "Success",
         description: "Signed up with Google successfully!",
       });
-      router.push("/dashboard");
+      router.push("/home");
     } catch (error: any) {
       console.error(error);
       toast({
