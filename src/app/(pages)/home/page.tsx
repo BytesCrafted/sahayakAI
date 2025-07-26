@@ -1,11 +1,10 @@
-
 // src/app/(pages)/home/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { collection, query, where, getDocs, DocumentData } from "firebase/firestore";
+import { collection, query, where, getDocs, DocumentData, Timestamp } from "firebase/firestore";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2, BookOpen } from "lucide-react";
@@ -20,17 +19,26 @@ interface Classroom {
 
 interface Content {
   id: string;
-  content_type: string;
-  topic: string;
+  addToLibraryInd: boolean;
+  contentData: {
+    classroomName: string;
+    title: string;
+    topic: string;
+    url: string;
+  };
+  contentFileUrl: string;
+  contentId: string;
+  contentType: string;
+  createDate: Timestamp;
+  createdBy: string;
+  generatedBy: string;
+  grade: number;
+  language: string;
+  relatedClassroomId: string;
   subject: string;
-  grade: string;
-  url: string;
-  content_data?: {
-    url?: string;
-    topic?: string;
-    subject?: string;
-    grade?: string;
-  }
+  topic: string;
+  uploadFileUrl: string | null;
+  userPrompt: string;
 }
 
 type GroupedContent = {
@@ -58,7 +66,7 @@ export default function HomePage() {
           setClassrooms(classroomsData);
 
           // Fetch contents
-          const contentsQuery = query(collection(db, "contents"), where("created_by", "==", user.uid));
+          const contentsQuery = query(collection(db, "contents"), where("createdBy", "==", user.uid));
           const contentsSnapshot = await getDocs(contentsQuery);
           const contentsData = contentsSnapshot.docs.map((doc) => ({
             id: doc.id,
@@ -67,7 +75,7 @@ export default function HomePage() {
           
           // Group contents by content_type
           const grouped = contentsData.reduce((acc: GroupedContent, content) => {
-            const type = content.content_type || 'uncategorized';
+            const type = content.contentType || 'uncategorized';
             if (!acc[type]) {
               acc[type] = [];
             }
@@ -159,14 +167,14 @@ export default function HomePage() {
                       {items.map((item) => (
                         <Card key={item.id} className="flex flex-col">
                           <CardHeader>
-                            <CardTitle>{item.topic || item.content_data?.topic || 'Untitled'}</CardTitle>
+                            <CardTitle>{item.contentData?.title || item.topic || 'Untitled'}</CardTitle>
                              <CardDescription>
-                              {item.subject || item.content_data?.subject} - Grade {item.grade || item.content_data?.grade}
+                              {item.subject} - Grade {item.grade}
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="flex-grow flex flex-col justify-end">
                             <Button asChild variant="outline" className="mt-auto">
-                              <Link href={item.url || item.content_data?.url || '#'} target="_blank" rel="noopener noreferrer">
+                              <Link href={item.contentData?.url || item.contentFileUrl || '#'} target="_blank" rel="noopener noreferrer">
                                 <BookOpen className="mr-2 h-4 w-4" />
                                 View Content
                               </Link>

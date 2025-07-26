@@ -95,7 +95,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
     try {
       const saveContent = async (classroomId: string, classroomName: string) => {
         const contentDoc = {
-          contentId: Date.now(),
+          contentId: crypto.randomUUID(),
           contentType: content.contentType,
           language: 'english',
           grade: parseInt(content.grade, 10) || 1,
@@ -114,7 +114,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
             topic: content.topic,
             url: content.pdfUrl,
           },
-          createDate: serverTimestamp(),
+          createDate: new Date(),
         };
         await addDoc(collection(db, "contents"), contentDoc);
       };
