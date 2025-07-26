@@ -3,37 +3,15 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { getAuth } from 'firebase-admin/auth';
-import { cookies } from 'next/headers';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { config } from 'dotenv';
 config();
 
 const API_BASE_URL = 'http://146.148.56.108:8000';
 
-const privateKey = process.env.FIREBASE_PRIVATE_KEY;
-if (!privateKey) {
-  throw new Error("FIREBASE_PRIVATE_KEY environment variable is not set.");
-}
-
-const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-if (!projectId) {
-  throw new Error("NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is not set.");
-}
-
-// ✅ Initialize Firebase Admin once
-if (getApps().length === 0) {
-  initializeApp({
-    credential: cert({
-      projectId: projectId,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
-      privateKey: privateKey.replace(/\\n/g, '\n'),
-    }),
-  });
-}
-
 const AskSahayakInputSchema = z.object({
-  question: z.string().describe('The question to ask Sahayak.')
+  question: z.string().describe('The question to ask Sahayak.'),
+  user_id: z.string().describe('The user ID.'),
+  session_id: z.string().optional().nullable().describe('The session ID for the conversation.'),
 });
 export type AskSahayakInput = z.infer<typeof AskSahayakInputSchema>;
 
@@ -54,20 +32,10 @@ const askSahayakFlow = ai.defineFlow(
     outputSchema: AskSahayakOutputSchema,
   },
   async (input) => {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('__session')?.value;
-
-    if (!token) {
-      throw new Error('User not authenticated');
-    }
-
-    const decodedToken = await getAuth().verifyIdToken(token);
-    const userId = decodedToken.uid;
-
-    const requestBody: { question: string; user_id: string; session_id?: string | null } = {
+    const requestBody = {
       question: input.question,
-      user_id: userId,
-      session_id: null,
+      user_id: input.user_id,
+      session_id: input.session_id,
     };
 
     const response = await fetch(`${API_BASE_URL}/ask_sahayak`, {
@@ -90,3 +58,5 @@ const askSahayakFlow = ai.defineFlow(
       answer: result.response,
       session_id: result.session_id,
     };
+  }
+);

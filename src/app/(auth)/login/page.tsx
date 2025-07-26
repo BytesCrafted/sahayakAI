@@ -28,7 +28,6 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { sessionLogin } from "./actions";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -57,12 +56,6 @@ export default function LoginPage() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
-      const idToken = await user.getIdToken();
-      
-      const sessionResult = await sessionLogin(idToken);
-      if (!sessionResult.success) {
-        throw new Error(sessionResult.error || 'Failed to create session.');
-      }
 
       // Update last login time
       const userRef = doc(db, "users", user.uid);
@@ -91,12 +84,6 @@ export default function LoginPage() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const idToken = await user.getIdToken();
-
-      const sessionResult = await sessionLogin(idToken);
-       if (!sessionResult.success) {
-        throw new Error(sessionResult.error || 'Failed to create session.');
-      }
 
       // Create or update user profile in Firestore
       const userRef = doc(db, "users", user.uid);

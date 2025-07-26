@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Loader2, Sparkles } from "lucide-react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
@@ -32,7 +32,7 @@ const FormSchema = z.object({
 export default function AskSahayakPage() {
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState("");
-  const [sessionId, setSessionId] = useState<string | undefined>("");
+  const [sessionId, setSessionId] = useState<string | undefined | null>(null);
   const { toast } = useToast();
   const [user, authLoading] = useAuthState(auth);
 
