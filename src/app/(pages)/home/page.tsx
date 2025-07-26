@@ -19,26 +19,26 @@ interface Classroom {
 
 interface Content {
   id: string;
-  addToLibraryInd: boolean;
-  contentData: {
+  add_to_library_ind: boolean;
+  content_data: {
     classroomName: string;
     title: string;
     topic: string;
     url: string;
   };
-  contentFileUrl: string;
-  contentId: string;
-  contentType: string;
-  createDate: Timestamp;
-  createdBy: string;
-  generatedBy: string;
+  content_file_url: string;
+  content_id: number;
+  content_type: string;
+  create_date: string;
+  created_by: string;
+  generated_by: string;
   grade: number;
   language: string;
-  relatedClassroomId: string;
+  related_classroom_id: string;
   subject: string;
   topic: string;
-  uploadFileUrl: string | null;
-  userPrompt: string;
+  upload_file_url: string | null;
+  user_prompt: string;
 }
 
 type GroupedContent = {
@@ -66,7 +66,7 @@ export default function HomePage() {
           setClassrooms(classroomsData);
 
           // Fetch contents
-          const contentsQuery = query(collection(db, "contents"), where("createdBy", "==", user.uid));
+          const contentsQuery = query(collection(db, "contents"), where("created_by", "==", user.uid));
           const contentsSnapshot = await getDocs(contentsQuery);
           const contentsData = contentsSnapshot.docs.map((doc) => ({
             id: doc.id,
@@ -75,7 +75,7 @@ export default function HomePage() {
           
           // Group contents by content_type
           const grouped = contentsData.reduce((acc: GroupedContent, content) => {
-            const type = content.contentType || 'uncategorized';
+            const type = content.content_type || 'uncategorized';
             if (!acc[type]) {
               acc[type] = [];
             }
@@ -167,14 +167,14 @@ export default function HomePage() {
                       {items.map((item) => (
                         <Card key={item.id} className="flex flex-col">
                           <CardHeader>
-                            <CardTitle>{item.contentData?.title || item.topic || 'Untitled'}</CardTitle>
+                            <CardTitle>{item.content_data?.title || item.topic || 'Untitled'}</CardTitle>
                              <CardDescription>
                               {item.subject} - Grade {item.grade}
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="flex-grow flex flex-col justify-end">
                             <Button asChild variant="outline" className="mt-auto">
-                              <Link href={item.contentData?.url || item.contentFileUrl || '#'} target="_blank" rel="noopener noreferrer">
+                              <Link href={item.content_data?.url || item.content_file_url || '#'} target="_blank" rel="noopener noreferrer">
                                 <BookOpen className="mr-2 h-4 w-4" />
                                 View Content
                               </Link>
