@@ -1,14 +1,32 @@
 import { Button } from '@/components/ui/button';
 import { Logotype } from '@/components/icons';
 import Link from 'next/link';
+import { UserNav } from '@/components/user-nav';
 
 export default function Home() {
+  // TODO: Replace with actual authentication check
+  const isAuthenticated = false;
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-16 flex items-center">
+    <div className="flex flex-col min-h-screen bg-background">
+      <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center justify-center" aria-label="SahayakAI Home">
           <Logotype className="h-6 w-auto" />
         </Link>
+        <nav>
+          {isAuthenticated ? (
+            <UserNav />
+          ) : (
+            <div className="flex items-center gap-4">
+              <Button asChild variant="ghost">
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild className="bg-accent hover:bg-accent/90">
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+          )}
+        </nav>
       </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
@@ -25,7 +43,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button asChild size="lg" className="bg-accent hover:bg-accent/90">
-                    <Link href="/ask-sahayak">Get Started</Link>
+                    <Link href="/dashboard">Get Started</Link>
                   </Button>
                 </div>
               </div>

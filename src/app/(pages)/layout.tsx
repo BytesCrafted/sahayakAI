@@ -7,10 +7,16 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { UserNav } from "@/components/user-nav";
+import { Button } from "@/components/ui/button";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  // TODO: Replace with actual authentication check
+  const isAuthenticated = false;
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -21,10 +27,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </SidebarHeader>
           <Navigation />
+          <SidebarFooter>
+            {isAuthenticated ? (
+              <UserNav />
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Button asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button asChild variant="secondary">
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </div>
+            )}
+          </SidebarFooter>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset className="bg-white">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-white px-4 md:px-6">
+      <SidebarInset className="bg-background">
+        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
           <SidebarTrigger className="md:hidden" />
           <h1 className="text-xl font-semibold font-headline">SahayakAI</h1>
         </header>
