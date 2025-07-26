@@ -32,10 +32,12 @@ export async function sessionLogin(idToken: string) {
   const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
   try {
     const sessionCookie = await getAuth().createSessionCookie(idToken, { expiresIn });
-    cookies().set('__session', sessionCookie, { maxAge: expiresIn, httpOnly: true, secure: true });
+    const cookieStore = await cookies();
+    cookieStore.set('__session', sessionCookie, { maxAge: expiresIn, httpOnly: true, secure: true });
     return { success: true };
-  } catch (error) {
+  } catch (error: any) { // Use any to allow access to error properties
     console.error('Failed to create session cookie:', error);
-    return { success: false, error: 'Failed to create session cookie.' };
+    console.error('Error details:', error.message, error.code); // Log specific error properties
+    return { success: false, error: 'Failed to create session cookie.' + (error.message || '') };
   }
 }
