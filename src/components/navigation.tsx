@@ -20,8 +20,8 @@ const navItems = [
   { href: "/ask-sahayak", icon: MessageSquare, label: "Ask Sahayak" },
   { href: "/worksheet-generator", icon: FileImage, label: "Worksheet Generator" },
   { href: "/lesson-plan-generator", icon: BookText, label: "Lesson Plan Generator" },
-  { href: "/study-material-generator", icon: FileText, label: "Study Material Generator" },
-  { href: "/quiz-generator", icon: PenSquare, label: "Quiz Generator" },
+  { href: "/generate-study-material", icon: FileText, label: "Study Material Generator" },
+  { href: "/generate-quiz", icon: PenSquare, label: "Quiz Generator" },
 ];
 
 export function Navigation() {
