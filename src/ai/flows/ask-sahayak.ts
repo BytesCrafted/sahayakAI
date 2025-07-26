@@ -38,16 +38,26 @@ const askSahayakFlow = ai.defineFlow(
     outputSchema: AskSahayakOutputSchema,
   },
   async (input) => {
+    
+    const requestBody: {
+        question: string;
+        session_id?: string;
+        user_id: string;
+    } = {
+        question: input.question,
+        user_id: input.user_id || "default_user",
+    };
+
+    if (input.session_id) {
+        requestBody.session_id = input.session_id;
+    }
+
     const response = await fetch(`${API_BASE_URL}/ask_sahayak`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            question: input.question,
-            session_id: input.session_id,
-            user_id: input.user_id || "default_user",
-        }),
+        body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
