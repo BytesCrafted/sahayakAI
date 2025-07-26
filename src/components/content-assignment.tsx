@@ -93,55 +93,41 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
     }
     setSaving(true);
     try {
-      const classroomPromises = selectedClassrooms.map(async (classroomId) => {
-        const classroom = classrooms.find(c => c.id === classroomId);
-        await addDoc(collection(db, "contents"), {
-          created_by: user.uid,
-          add_to_library_ind: addToLibrary,
-          content_type: content.contentType,
-          grade: content.grade,
+      const saveContent = async (classroomId: string, classroomName: string) => {
+        const contentDoc = {
+          contentId: Date.now(),
+          contentType: content.contentType,
+          language: 'english',
+          grade: parseInt(content.grade, 10) || 1,
           subject: content.subject,
           topic: content.topic,
-          url: content.pdfUrl,
-          related_classroom_id: classroomId,
-          content_data: {
+          userPrompt: content.userPrompt,
+          generatedBy: 'gemini',
+          createdBy: user.uid,
+          relatedClassroomId: classroomId,
+          uploadFileUrl: null,
+          contentFileUrl: content.pdfUrl,
+          addToLibraryInd: addToLibrary,
+          contentData: {
             title: content.title,
+            classroomName: classroomName,
             topic: content.topic,
             url: content.pdfUrl,
-            userPrompt: content.userPrompt,
-            subject: content.subject,
-            grade: content.grade,
-            classroomName: classroom?.name || "",
           },
-          create_date: serverTimestamp(),
-        });
-      });
+          createDate: serverTimestamp(),
+        };
+        await addDoc(collection(db, "contents"), contentDoc);
+      };
 
-      if (selectedClassrooms.length === 0) {
-        await addDoc(collection(db, "contents"), {
-          created_by: user.uid,
-          add_to_library_ind: addToLibrary,
-          content_type: content.contentType,
-          grade: content.grade,
-          subject: content.subject,
-          topic: content.topic,
-          url: content.pdfUrl,
-          related_classroom_id: "",
-           content_data: {
-            title: content.title,
-            topic: content.topic,
-            url: content.pdfUrl,
-            userPrompt: content.userPrompt,
-            subject: content.subject,
-            grade: content.grade,
-            classroomName: "",
-          },
-          create_date: serverTimestamp(),
+      if (selectedClassrooms.length > 0) {
+        const classroomPromises = selectedClassrooms.map((classroomId) => {
+          const classroom = classrooms.find((c) => c.id === classroomId);
+          return saveContent(classroomId, classroom?.name || "");
         });
+        await Promise.all(classroomPromises);
+      } else {
+        await saveContent("", "");
       }
-
-
-      await Promise.all(classroomPromises);
 
       toast({
         title: "Content Saved!",
@@ -159,6 +145,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
       setSaving(false);
     }
   };
+
 
   return (
     <>
