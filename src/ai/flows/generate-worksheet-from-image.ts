@@ -19,8 +19,7 @@ const GenerateWorksheetFromImageInputSchema = z.object({
     .describe(
       "An image to generate a worksheet from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  subject: z.string(),
-  grade: z.string(),
+  image_filename: z.string(),
 });
 export type GenerateWorksheetFromImageInput = z.infer<
   typeof GenerateWorksheetFromImageInputSchema

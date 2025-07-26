@@ -43,7 +43,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button asChild size="lg" className="bg-accent hover:bg-accent/90">
-                    <Link href="/ask-sahayak">Get Started</Link>
+                    <Link href="/worksheet-generator">Get Started</Link>
                   </Button>
                 </div>
               </div>

@@ -61,7 +61,7 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/ask-sahayak">
+            <Link href="/worksheet-generator">
               <LayoutDashboard className="mr-2" />
               <span>Dashboard</span>
             </Link>

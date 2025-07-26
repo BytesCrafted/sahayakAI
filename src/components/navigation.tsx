@@ -1,12 +1,7 @@
 "use client";
 
 import {
-  BookText,
   FileImage,
-  FileText,
-  LayoutDashboard,
-  MessageSquare,
-  PenSquare,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -17,11 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { href: "/ask-sahayak", icon: MessageSquare, label: "Ask Sahayak" },
   { href: "/worksheet-generator", icon: FileImage, label: "Worksheet Generator" },
-  { href: "/lesson-plan-generator", icon: BookText, label: "Lesson Plan Generator" },
-  { href: "/generate-study-material", icon: FileText, label: "Study Material Generator" },
-  { href: "/generate-quiz", icon: PenSquare, label: "Quiz Generator" },
 ];
 
 export function Navigation() {
@@ -33,7 +24,7 @@ export function Navigation() {
         <SidebarMenuItem key={item.href}>
           <SidebarMenuButton
             asChild
-            isActive={pathname === item.href}
+            isActive={pathname.startsWith(item.href)}
             tooltip={item.label}
           >
             <Link href={item.href}>

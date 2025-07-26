@@ -29,7 +29,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 const FormSchema = z.object({
   image: z
     .any()
-    .refine((file) => file?.size, "Image is required.")
+    .refine((file) => file?.name, "Image is required.")
     .refine(
       (file) => file?.size <= MAX_FILE_SIZE,
       `Max file size is 5MB.`
@@ -38,12 +38,6 @@ const FormSchema = z.object({
       (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
       "Only .jpg and .png files are accepted."
     ),
-  subject: z.string().min(3, {
-    message: "Subject must be at least 3 characters.",
-  }),
-  grade: z.string().min(1, {
-    message: "Grade is required.",
-  }),
 });
 
 export default function GenerateWorksheetPage() {
@@ -54,10 +48,6 @@ export default function GenerateWorksheetPage() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      subject: "",
-      grade: "",
-    }
   });
   
   const toDataURL = (file: File): Promise<string> => {
@@ -89,8 +79,7 @@ export default function GenerateWorksheetPage() {
       const imageDataUri = await toDataURL(data.image);
       const result = await generateWorksheetFromImage({ 
         image_base64: imageDataUri,
-        subject: data.subject,
-        grade: data.grade,
+        image_filename: data.image.name,
       });
 
       if (result.url) {
@@ -117,14 +106,14 @@ export default function GenerateWorksheetPage() {
   return (
     <>
       <PageHeader
-        title="Generate Worksheet from Image"
-        description="Turn any image into an educational worksheet in just one click."
+        title="Sahayak - Worksheet from Image"
+        description="Upload a textbook image to generate a worksheet in just one click."
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Upload Image & Details</CardTitle>
+              <CardTitle>Upload Image</CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -163,33 +152,7 @@ export default function GenerateWorksheetPage() {
                       </FormItem>
                     )}
                   />
-                   <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="e.g., Science" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="grade"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Grade</FormLabel>
-                        <FormControl>
-                          <Input type="text" placeholder="e.g., 6th Grade" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" disabled={loading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
+                  <Button type="submit" disabled={loading || !form.formState.isValid} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
