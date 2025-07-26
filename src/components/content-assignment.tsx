@@ -95,7 +95,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
     try {
       const saveContent = async (classroomId: string, classroomName: string) => {
         const contentDoc = {
-          contentId: crypto.randomUUID(),
+          contentId: Date.now(),
           contentType: content.contentType,
           language: 'english',
           grade: parseInt(content.grade, 10) || 1,
