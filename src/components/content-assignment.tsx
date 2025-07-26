@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { collection, query, where, getDocs, addDoc, DocumentData, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, DocumentData } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -95,26 +95,26 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
     try {
       const saveContent = async (classroomId: string, classroomName: string) => {
         const contentDoc = {
-          contentId: crypto.randomUUID(),
-          contentType: content.contentType,
-          language: 'english',
-          grade: parseInt(content.grade, 10) || 1,
-          subject: content.subject,
-          topic: content.topic,
-          userPrompt: content.userPrompt,
-          generatedBy: 'gemini',
-          createdBy: user.uid,
-          relatedClassroomId: classroomId,
-          uploadFileUrl: null,
-          contentFileUrl: content.pdfUrl,
-          addToLibraryInd: addToLibrary,
-          contentData: {
+          add_to_library_ind: addToLibrary,
+          content_data: {
             title: content.title,
             classroomName: classroomName,
             topic: content.topic,
             url: content.pdfUrl,
           },
-          createDate: new Date(),
+          content_file_url: content.pdfUrl,
+          content_id: Date.now(),
+          content_type: content.contentType,
+          create_date: new Date().toISOString(),
+          created_by: user.uid,
+          generated_by: 'gemini',
+          grade: parseInt(content.grade, 10) || 1,
+          language: 'english',
+          related_classroom_id: classroomId,
+          subject: content.subject,
+          topic: content.topic,
+          upload_file_url: null,
+          user_prompt: content.userPrompt,
         };
         await addDoc(collection(db, "contents"), contentDoc);
       };
