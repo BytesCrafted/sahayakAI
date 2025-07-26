@@ -3,8 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, Sparkles } from "lucide-react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/lib/firebase";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,8 +32,9 @@ const FormSchema = z.object({
 export default function AskSahayakPage() {
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState("");
-  const [sessionId, setSessionId] = useState<string | undefined>(undefined);
+  const [sessionId, setSessionId] = useState<string | undefined>("");
   const { toast } = useToast();
+  const [user, authLoading] = useAuthState(auth);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -41,12 +44,22 @@ export default function AskSahayakPage() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    if (!user) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "You must be logged in to ask a question.",
+      });
+      return;
+    }
+
     setLoading(true);
     setAnswer("");
     try {
       const result = await askSahayak({
         question: data.question,
         session_id: sessionId,
+        user_id: user.uid,
       });
       setAnswer(result.answer);
       setSessionId(result.session_id);
@@ -98,7 +111,7 @@ export default function AskSahayakPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={loading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
+                  <Button type="submit" disabled={loading || authLoading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
                     {loading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (

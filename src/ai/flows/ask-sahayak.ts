@@ -46,7 +46,7 @@ const askSahayakFlow = ai.defineFlow(
         body: JSON.stringify({
             question: input.question,
             session_id: input.session_id,
-            user_id: input.user_id,
+            user_id: input.user_id || "default_user",
         }),
     });
 
