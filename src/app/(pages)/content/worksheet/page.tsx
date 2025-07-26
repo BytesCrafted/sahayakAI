@@ -88,6 +88,7 @@ export default function GenerateWorksheetPage() {
     try {
       const imageFile = data.image[0];
       const imageDataUri = await toDataURL(imageFile);
+
       const result = await generateWorksheetFromImage({
         image_base64: imageDataUri,
         image_filename: imageFile.name,
