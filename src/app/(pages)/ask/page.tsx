@@ -30,6 +30,7 @@ const FormSchema = z.object({
 export default function AskSahayakPage() {
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState("");
+  const [sessionId, setSessionId] = useState<string | undefined>(undefined);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,8 +44,12 @@ export default function AskSahayakPage() {
     setLoading(true);
     setAnswer("");
     try {
-      const result = await askSahayak(data);
+      const result = await askSahayak({
+        question: data.question,
+        session_id: sessionId,
+      });
       setAnswer(result.answer);
+      setSessionId(result.session_id);
     } catch (error) {
       console.error(error);
       toast({
