@@ -48,6 +48,9 @@ export default function GenerateWorksheetPage() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      image: null,
+    },
   });
   
   const toDataURL = (file: File): Promise<string> => {
