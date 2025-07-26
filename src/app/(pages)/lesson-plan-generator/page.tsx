@@ -99,7 +99,7 @@ export default function GenerateLessonPlanPage() {
                       <FormItem>
                         <FormLabel>Subject</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., History" {...field} />
+                          <Input type="text" placeholder="e.g., History" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -112,7 +112,7 @@ export default function GenerateLessonPlanPage() {
                       <FormItem>
                         <FormLabel>Grade</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., 10th Grade" {...field} />
+                          <Input type="text" placeholder="e.g., 10th Grade" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -126,6 +126,7 @@ export default function GenerateLessonPlanPage() {
                         <FormLabel>Topic</FormLabel>
                         <FormControl>
                           <Input
+                            type="text"
                             placeholder="e.g., The American Revolution"
                             {...field}
                           />
