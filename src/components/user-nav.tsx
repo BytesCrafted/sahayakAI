@@ -1,4 +1,3 @@
-// src/components/user-nav.tsx
 "use client";
 
 import {
@@ -61,9 +60,15 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/worksheet-generator">
+            <Link href="/dashboard">
               <LayoutDashboard className="mr-2" />
               <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/profile">
+              <UserIcon className="mr-2" />
+              <span>Profile</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
