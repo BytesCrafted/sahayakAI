@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { LogOut, User as UserIcon, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
 export function UserNav() {
@@ -61,8 +61,8 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard">
-              <UserIcon className="mr-2" />
+            <Link href="/ask-sahayak">
+              <LayoutDashboard className="mr-2" />
               <span>Dashboard</span>
             </Link>
           </DropdownMenuItem>

@@ -4,6 +4,7 @@ import {
   BookText,
   FileImage,
   FileText,
+  LayoutDashboard,
   MessageSquare,
   PenSquare,
 } from "lucide-react";
