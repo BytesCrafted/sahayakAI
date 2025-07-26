@@ -138,7 +138,7 @@ export default function GenerateStudyMaterialPage() {
               {!loading && !material && (
                 <p className="text-muted-foreground text-sm">
                   Your generated study material will appear here.
-                p>
+                </p>
               )}
             </CardContent>
           </Card>

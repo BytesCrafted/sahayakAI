@@ -49,7 +49,7 @@ const generateWorksheetFromImageFlow = ai.defineFlow(
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ image_data_uri: input.imageDataUri }),
+      body: JSON.stringify({ image_base64: input.imageDataUri }),
     });
 
     if (!response.ok) {
