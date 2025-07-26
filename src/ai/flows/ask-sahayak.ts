@@ -16,9 +16,9 @@ if (!privateKey) {
   throw new Error("FIREBASE_PRIVATE_KEY environment variable is not set.");
 }
 
-const projectId = process.env.projectId;
+const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 if (!projectId) {
-  throw new Error("projectId environment variable is not set.");
+  throw new Error("NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is not set.");
 }
 
 // ✅ Initialize Firebase Admin once
@@ -90,5 +90,3 @@ const askSahayakFlow = ai.defineFlow(
       answer: result.response,
       session_id: result.session_id,
     };
-  }
-);
