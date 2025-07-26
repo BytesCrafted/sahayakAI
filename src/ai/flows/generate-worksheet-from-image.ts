@@ -49,7 +49,8 @@ const generateWorksheetFromImageFlow = ai.defineFlow(
     const blob = await fetchResponse.blob();
 
     const formData = new FormData();
-    formData.append('image', blob, 'worksheet-image');
+    // Setting a filename for the blob, which might be required by the server.
+    formData.append('image', blob, 'worksheet-image.png');
     
     const response = await fetch(`${API_BASE_URL}/generate_worksheet_from_image`, {
       method: 'POST',
