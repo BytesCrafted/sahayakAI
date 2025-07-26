@@ -50,7 +50,7 @@ const navItems = [
         label: "Lesson Plan Generator",
       },
       {
-        href: "/generate-study-material",
+        href: "/content/study-material",
         icon: BookOpen,
         label: "Study Material",
       },
