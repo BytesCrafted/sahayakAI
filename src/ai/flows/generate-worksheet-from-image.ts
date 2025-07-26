@@ -14,11 +14,13 @@ import {z} from 'genkit';
 const API_BASE_URL = 'http://146.148.56.108:8000';
 
 const GenerateWorksheetFromImageInputSchema = z.object({
-  imageDataUri: z
+  image_base64: z
     .string()
     .describe(
       "An image to generate a worksheet from, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  subject: z.string(),
+  grade: z.string(),
 });
 export type GenerateWorksheetFromImageInput = z.infer<
   typeof GenerateWorksheetFromImageInputSchema
@@ -43,13 +45,13 @@ const generateWorksheetFromImageFlow = ai.defineFlow(
     inputSchema: GenerateWorksheetFromImageInputSchema,
     outputSchema: GenerateWorksheetFromImageOutputSchema,
   },
-  async input => {
+  async (input) => {
     const response = await fetch(`${API_BASE_URL}/generate_worksheet_from_image`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ image_base64: input.imageDataUri }),
+      body: JSON.stringify(input),
     });
 
     if (!response.ok) {

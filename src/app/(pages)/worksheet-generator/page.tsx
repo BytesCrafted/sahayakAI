@@ -1,3 +1,4 @@
+// src/app/(pages)/worksheet-generator/page.tsx
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +38,12 @@ const FormSchema = z.object({
       (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
       "Only .jpg and .png files are accepted."
     ),
+  subject: z.string().min(3, {
+    message: "Subject must be at least 3 characters.",
+  }),
+  grade: z.string().min(1, {
+    message: "Grade is required.",
+  }),
 });
 
 export default function GenerateWorksheetPage() {
@@ -47,6 +54,10 @@ export default function GenerateWorksheetPage() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      subject: "",
+      grade: "",
+    }
   });
   
   const toDataURL = (file: File): Promise<string> => {
@@ -76,7 +87,11 @@ export default function GenerateWorksheetPage() {
 
     try {
       const imageDataUri = await toDataURL(data.image);
-      const result = await generateWorksheetFromImage({ imageDataUri });
+      const result = await generateWorksheetFromImage({ 
+        image_base64: imageDataUri,
+        subject: data.subject,
+        grade: data.grade,
+      });
 
       if (result.url) {
         setResultUrl(result.url);
@@ -109,7 +124,7 @@ export default function GenerateWorksheetPage() {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Upload Image</CardTitle>
+              <CardTitle>Upload Image & Details</CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -143,6 +158,32 @@ export default function GenerateWorksheetPage() {
                               <Input id="dropzone-file" type="file" className="hidden" onChange={handleFileChange} accept={ACCEPTED_IMAGE_TYPES.join(",")} />
                             </label>
                           </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Subject</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="e.g., Science" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="grade"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Grade</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="e.g., 6th Grade" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
