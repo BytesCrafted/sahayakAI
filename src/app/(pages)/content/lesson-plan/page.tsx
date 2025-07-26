@@ -23,6 +23,7 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateLessonPlan } from "@/ai/flows/generate-lesson-plan";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const FormSchema = z.object({
   subject: z.string().min(3, {
@@ -34,6 +35,7 @@ const FormSchema = z.object({
   topic: z.string().min(3, {
     message: "Topic must be at least 3 characters.",
   }),
+  description: z.string().optional(),
 });
 
 export default function GenerateLessonPlanPage() {
@@ -47,6 +49,7 @@ export default function GenerateLessonPlanPage() {
       subject: "",
       grade: "",
       topic: "",
+      description: "",
     },
   });
 
@@ -143,6 +146,24 @@ export default function GenerateLessonPlanPage() {
                         <FormControl>
                           <Input
                             placeholder="e.g., The American Revolution"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description (Optional)</FormLabel>
+                        <FormControl>
+                           <Textarea
+                            placeholder="e.g., Include hands-on activities and a short video suggestion."
+                            className="resize-none"
+                            rows={3}
                             {...field}
                           />
                         </FormControl>
