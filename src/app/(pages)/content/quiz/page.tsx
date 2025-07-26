@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Link as LinkIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,39 +29,54 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuiz } from "@/ai/flows/generate-quiz";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 const FormSchema = z.object({
-  topic: z.string().min(3, {
-    message: "Topic must be at least 3 characters.",
+  subject: z.string().min(3, {
+    message: "Subject must be at least 3 characters.",
   }),
-  difficulty: z.enum(["easy", "medium", "hard"]),
+  grade: z.string().min(1, {
+    message: "Grade is required.",
+  }),
+  topic: z.string().optional(),
+  description: z.string().optional(),
 });
 
 export default function QuizGeneratorPage() {
   const [loading, setLoading] = useState(false);
-  const [quiz, setQuiz] = useState("");
+  const [resultUrl, setResultUrl] = useState("");
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      subject: "",
+      grade: "",
       topic: "",
-      difficulty: "medium",
+      description: "",
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
-    setQuiz("");
+    setResultUrl("");
     try {
       const result = await generateQuiz(data);
-      setQuiz(result.quiz);
-    } catch (error) {
+       if (result.url) {
+        setResultUrl(result.url);
+        toast({
+          title: "Success!",
+          description: "Your quiz has been generated.",
+        });
+      } else {
+        throw new Error("Invalid response from server.");
+      }
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to generate quiz. Please try again.",
+        description: error.message || "Failed to generate quiz. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -72,7 +87,7 @@ export default function QuizGeneratorPage() {
     <>
       <PageHeader
         title="Quiz Generator"
-        description="Create a quiz on any topic with varying difficulty."
+        description="Create a comprehensive quiz for any subject and topic."
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
@@ -88,10 +103,53 @@ export default function QuizGeneratorPage() {
                 >
                   <FormField
                     control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Subject</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Biology"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="grade"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Grade</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a grade" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {[...Array(12)].map((_, i) => (
+                              <SelectItem key={i + 1} value={`${i + 1}`}>
+                                Grade {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="topic"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Topic</FormLabel>
+                        <FormLabel>Topic (Optional)</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., Photosynthesis"
@@ -104,25 +162,18 @@ export default function QuizGeneratorPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="difficulty"
+                    name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Difficulty</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a difficulty" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="easy">Easy</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="hard">Hard</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>Description (Optional)</FormLabel>
+                        <FormControl>
+                           <Textarea
+                            placeholder="e.g., Focus on the chemical reactions involved."
+                            className="resize-none"
+                            rows={3}
+                            {...field}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -155,16 +206,26 @@ export default function QuizGeneratorPage() {
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
               )}
-              {quiz && (
-                <Textarea
-                  readOnly
-                  value={quiz}
-                  className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap font-body h-64"
-                />
+               {resultUrl && (
+                <div className="flex flex-col items-start gap-4">
+                  <p>
+                    Your quiz is ready! Click the link below to download.
+                  </p>
+                  <Button asChild variant="outline">
+                    <Link
+                      href={resultUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Download Quiz (PDF)
+                    </Link>
+                  </Button>
+                </div>
               )}
-              {!loading && !quiz && (
+              {!loading && !resultUrl && (
                 <p className="text-muted-foreground text-sm">
-                  Your generated quiz will appear here.
+                  Your generated quiz link will appear here.
                 </p>
               )}
             </CardContent>

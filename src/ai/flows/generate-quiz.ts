@@ -11,32 +11,32 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const API_BASE_URL = 'http://146.148.56.108:8000';
+
 const GenerateQuizInputSchema = z.object({
-  topic: z.string().describe('The topic of the quiz.'),
-  difficulty: z.enum(['easy', 'medium', 'hard']).describe('The difficulty level of the quiz.'),
+  subject: z.string().min(3, {
+    message: 'Subject must be at least 3 characters.',
+  }),
+  grade: z.string().min(1, {
+    message: 'Grade is required.',
+  }),
+  topic: z.string().optional(),
+  description: z.string().optional(),
 });
 export type GenerateQuizInput = z.infer<typeof GenerateQuizInputSchema>;
 
 const GenerateQuizOutputSchema = z.object({
-  quiz: z.string().describe('The generated quiz content.'),
+  url: z.string().url(),
 });
-export type GenerateQuizOutput = z.infer<typeof GenerateQuizOutputSchema>;
+export type GenerateQuizOutput = z.infer<
+  typeof GenerateQuizOutputSchema
+>;
 
-export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
+export async function generateQuiz(
+  input: GenerateQuizInput
+): Promise<GenerateQuizOutput> {
   return generateQuizFlow(input);
 }
-
-const prompt = ai.definePrompt({
-  name: 'generateQuizPrompt',
-  input: {schema: GenerateQuizInputSchema},
-  output: {schema: GenerateQuizOutputSchema},
-  prompt: `You are an expert quiz generator for teachers. You will generate a quiz on a specific topic with a specified difficulty level. The output should be plain text.
-
-Topic: {{{topic}}}
-Difficulty: {{{difficulty}}}
-
-Quiz:`,
-});
 
 const generateQuizFlow = ai.defineFlow(
   {
@@ -44,8 +44,22 @@ const generateQuizFlow = ai.defineFlow(
     inputSchema: GenerateQuizInputSchema,
     outputSchema: GenerateQuizOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input) => {
+    const response = await fetch(`${API_BASE_URL}/generate_quiz`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(input),
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("Quiz generation failed:", errorBody);
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return { url: result.url };
   }
 );
