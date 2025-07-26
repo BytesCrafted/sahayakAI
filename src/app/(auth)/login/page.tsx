@@ -7,6 +7,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -20,6 +21,13 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
 import { GoogleIcon } from "@/components/icons";
+import { auth, db } from "@/lib/firebase";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -33,6 +41,7 @@ const FormSchema = z.object({
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -45,14 +54,18 @@ export default function LoginPage() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     try {
-      // TODO: Implement login functionality
-      console.log(data);
-    } catch (error) {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+      router.push("/dashboard");
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to login. Please check your credentials.",
+        description: error.message || "Failed to login. Please check your credentials.",
       });
     } finally {
       setLoading(false);
@@ -60,7 +73,37 @@ export default function LoginPage() {
   }
 
   const handleGoogleSignIn = async () => {
-    // TODO: Implement Google Sign-In functionality
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Create user profile in Firestore if it doesn't exist
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, {
+        name: user.displayName,
+        email: user.email,
+        role: "teacher",
+        createdAt: new Date(),
+        lastLogin: new Date(),
+      }, { merge: true });
+
+      toast({
+        title: "Success",
+        description: "Logged in with Google successfully!",
+      });
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to sign in with Google. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -136,7 +179,7 @@ export default function LoginPage() {
           onClick={handleGoogleSignIn}
           disabled={loading}
         >
-          <GoogleIcon className="mr-2 h-5 w-5" />
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-5 w-5" />}
           Google
         </Button>
         <div className="text-center">

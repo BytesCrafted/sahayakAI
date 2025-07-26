@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
+import { auth } from "@/lib/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -40,18 +42,17 @@ export default function ForgotPasswordPage() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(true);
     try {
-      // TODO: Implement forgot password functionality
-      console.log(data.email);
+      await sendPasswordResetEmail(auth, data.email);
       toast({
         title: "Password Reset Email Sent",
         description: "Please check your inbox for password reset instructions.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send password reset email. Please try again.",
+        description: error.message || "Failed to send password reset email. Please try again.",
       });
     } finally {
       setLoading(false);
