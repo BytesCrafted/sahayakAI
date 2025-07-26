@@ -3,7 +3,6 @@
 import {
   FileImage,
   Home,
-  LayoutDashboard,
   MessageSquare,
   Book,
   FileText,
@@ -31,7 +30,6 @@ import * as React from "react";
 
 const navItems = [
   { href: "/home", icon: Home, label: "Home" },
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/ask", icon: MessageSquare, label: "Ask Sahayak" },
   {
     href: "/content",
