@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -10,6 +11,7 @@ import {
   User,
   ChevronDown,
   BookOpen,
+  Library,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -54,6 +56,7 @@ const navItems = [
       },
     ],
   },
+  { href: "/resource-library", icon: Library, label: "Resource Library" },
   { href: "/profile", icon: User, label: "Profile" },
 ];
 
