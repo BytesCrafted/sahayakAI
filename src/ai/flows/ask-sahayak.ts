@@ -1,29 +1,38 @@
 // src/ai/flows/ask-sahayak.ts
 'use server';
 
-/**
- * @fileOverview A question answering AI agent that calls an external API.
- *
- * - askSahayak - A function that handles the question answering process.
- * - AskSahayakInput - The input type for the askSahayak function.
- * - AskSahayakOutput - The return type for the askSahayak function.
- */
-
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+import { getAuth } from 'firebase-admin/auth';
+import { cookies } from 'next/headers';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
 
 const API_BASE_URL = 'http://146.148.56.108:8000';
 
+const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+if (!privateKey) {
+  throw new Error("FIREBASE_PRIVATE_KEY environment variable is not set.");
+}
+
+// ✅ Initialize Firebase Admin once
+if (getApps().length === 0) {
+  initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID!,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+      privateKey: privateKey.replace(/\\n/g, '\n'),
+    }),
+  });
+}
+
 const AskSahayakInputSchema = z.object({
-  question: z.string().describe('The question to ask Sahayak.'),
-  session_id: z.string().optional().describe("Session ID to continue a conversation."),
-  user_id: z.string().optional().describe("User ID for tracking.")
+  question: z.string().describe('The question to ask Sahayak.')
 });
 export type AskSahayakInput = z.infer<typeof AskSahayakInputSchema>;
 
 const AskSahayakOutputSchema = z.object({
   answer: z.string().describe('The answer to the question.'),
-  session_id: z.string().describe("The session ID for the conversation.")
+  session_id: z.string().describe('The session ID for the conversation.')
 });
 export type AskSahayakOutput = z.infer<typeof AskSahayakOutputSchema>;
 
@@ -38,39 +47,41 @@ const askSahayakFlow = ai.defineFlow(
     outputSchema: AskSahayakOutputSchema,
   },
   async (input) => {
-    
-    const requestBody: {
-        question: string;
-        session_id?: string;
-        user_id: string;
-    } = {
-        question: input.question,
-        user_id: input.user_id || "default_user",
-    };
+    const cookieStore = await cookies(); // ✅ Await here
+    const token = cookieStore.get('__session')?.value;
 
-    if (input.session_id) {
-        requestBody.session_id = input.session_id;
+    if (!token) {
+      throw new Error('User not authenticated');
     }
 
+    const decodedToken = await getAuth().verifyIdToken(token);
+    const userId = decodedToken.uid;
+
+    const requestBody: { question: string; user_id: string; session_id?: string | null } = {
+      question: input.question,
+      user_id: userId,
+      session_id: null,
+    };
+
     const response = await fetch(`${API_BASE_URL}/ask_sahayak`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Ask Sahayak request failed:", errorBody);
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const errorBody = await response.text();
+      console.error('Ask Sahayak request failed:', errorBody);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const result = await response.json();
 
     return {
-        answer: result.answer,
-        session_id: result.session_id,
+      answer: result.response,
+      session_id: result.session_id,
     };
   }
 );
