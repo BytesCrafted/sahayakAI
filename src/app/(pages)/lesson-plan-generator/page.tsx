@@ -20,8 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-
-const API_BASE_URL = "http://146.148.56.108:8000";
+import { generateLessonPlan } from "@/ai/flows/generate-lesson-plan";
 
 const FormSchema = z.object({
   subject: z.string().min(3, {
@@ -53,19 +52,7 @@ export default function GenerateLessonPlanPage() {
     setLoading(true);
     setResultUrl("");
     try {
-      const response = await fetch(`${API_BASE_URL}/generate_lesson_plan`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
+      const result = await generateLessonPlan(data);
       if (result.url) {
         setResultUrl(result.url);
         toast({
