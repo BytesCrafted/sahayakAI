@@ -6,6 +6,8 @@ import { z } from 'genkit';
 import { getAuth } from 'firebase-admin/auth';
 import { cookies } from 'next/headers';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { config } from 'dotenv';
+config();
 
 const API_BASE_URL = 'http://146.148.56.108:8000';
 
@@ -14,11 +16,16 @@ if (!privateKey) {
   throw new Error("FIREBASE_PRIVATE_KEY environment variable is not set.");
 }
 
+const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+if (!projectId) {
+  throw new Error("NEXT_PUBLIC_FIREBASE_PROJECT_ID environment variable is not set.");
+}
+
 // ✅ Initialize Firebase Admin once
 if (getApps().length === 0) {
   initializeApp({
     credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID!,
+      projectId: projectId,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
       privateKey: privateKey.replace(/\\n/g, '\n'),
     }),
@@ -47,7 +54,7 @@ const askSahayakFlow = ai.defineFlow(
     outputSchema: AskSahayakOutputSchema,
   },
   async (input) => {
-    const cookieStore = await cookies(); // ✅ Await here
+    const cookieStore = cookies();
     const token = cookieStore.get('__session')?.value;
 
     if (!token) {

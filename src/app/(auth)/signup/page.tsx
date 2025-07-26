@@ -29,6 +29,7 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { sessionLogin } from "../login/actions";
 
 const FormSchema = z.object({
   displayName: z.string().min(3, {
@@ -65,6 +66,9 @@ export default function SignupPage() {
         data.password
       );
       const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      await sessionLogin(idToken);
 
       await updateProfile(user, {
         displayName: data.displayName,
@@ -103,6 +107,9 @@ export default function SignupPage() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      const idToken = await user.getIdToken();
+
+      await sessionLogin(idToken);
 
       // Create or update user profile in Firestore
       const userRef = doc(db, "users", user.uid);
