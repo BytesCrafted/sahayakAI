@@ -57,7 +57,6 @@ export default function LoginPage() {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      // Update last login time
       const userRef = doc(db, "users", user.uid);
       await setDoc(userRef, { lastLogin: new Date() }, { merge: true });
 
@@ -85,7 +84,6 @@ export default function LoginPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      // Create or update user profile in Firestore
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
