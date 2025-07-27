@@ -54,12 +54,11 @@ export default function Home() {
                 </div>
               </div>
               <img
-                src="https://placehold.co/600x400.png"
-                width="600"
+                src="/sahayak_logo.png"
+                width="400"
                 height="400"
-                alt="Hero"
-                data-ai-hint="education technology abstract"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+                alt="SahayakAI Hero Logo"
+                className="mx-auto aspect-square overflow-hidden rounded-xl object-contain sm:w-full lg:order-last"
               />
             </div>
           </div>
