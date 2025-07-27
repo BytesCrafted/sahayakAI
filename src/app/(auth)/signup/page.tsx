@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -29,6 +28,7 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 const FormSchema = z.object({
   displayName: z.string().min(3, {
@@ -144,6 +144,8 @@ export default function SignupPage() {
           title="Create an Account"
           description="Join SahayakAI and empower your teaching."
         />
+        {loading ? <div className="flex justify-center items-center"><LoadingAnimation /></div> : (
+        <>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -194,7 +196,6 @@ export default function SignupPage() {
               disabled={loading}
               className="w-full bg-accent hover:bg-accent/90"
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>
           </form>
@@ -215,7 +216,7 @@ export default function SignupPage() {
           onClick={handleGoogleSignIn}
           disabled={loading}
         >
-          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-5 w-5" />}
+          <GoogleIcon className="mr-2 h-5 w-5" />
           Google
         </Button>
         <div className="text-center">
@@ -226,6 +227,8 @@ export default function SignupPage() {
             </Link>
           </p>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

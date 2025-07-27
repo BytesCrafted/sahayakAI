@@ -24,9 +24,11 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { Loader2, BookOpen, Users, ArrowLeft } from "lucide-react";
+import { BookOpen, Users, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LoadingAnimation } from "@/components/loading-animation";
+
 
 interface Classroom {
   id: string;
@@ -123,7 +125,7 @@ export default function ClassroomDetailPage() {
   if (loading || authLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <LoadingAnimation />
       </div>
     );
   }

@@ -7,10 +7,11 @@ import { auth, db } from "@/lib/firebase";
 import { collection, query, where, getDocs, DocumentData, Timestamp } from "firebase/firestore";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logotype } from "@/components/icons";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 interface Content {
   id: string;
@@ -110,7 +111,7 @@ export default function HomePage() {
       </div>
       {loading || authLoading ? (
         <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <LoadingAnimation />
         </div>
       ) : error ? (
         <Card>

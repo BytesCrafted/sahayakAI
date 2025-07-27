@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import { generateStudyMaterial, GenerateStudyMaterialInput } from "@/ai/flows/generate-study-material";
 import { Textarea } from "@/components/ui/textarea";
 import { ContentAssignment, ContentDetails } from "@/components/content-assignment";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 const FormSchema = z.object({
   subject: z.string().min(3, {
@@ -95,6 +96,14 @@ export default function StudyMaterialPage() {
 
   if (generatedContent) {
     return <ContentAssignment content={generatedContent} onBack={() => setGeneratedContent(null)} />;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <LoadingAnimation />
+      </div>
+    );
   }
 
   return (
@@ -192,11 +201,7 @@ export default function StudyMaterialPage() {
                 disabled={loading}
                 className="w-full sm:w-auto bg-accent hover:bg-accent/90"
               >
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="mr-2 h-4 w-4" />
-                )}
+                <Sparkles className="mr-2 h-4 w-4" />
                 Generate Material
               </Button>
             </form>

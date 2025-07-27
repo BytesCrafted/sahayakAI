@@ -18,7 +18,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -45,7 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarFooter>
             {loading ? (
                 <div className="flex justify-center items-center w-full">
-                    <Loader2 className="h-6 w-6 animate-spin"/>
+                    <LoadingAnimation />
                 </div>
             ) : user ? (
               <UserNav />

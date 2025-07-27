@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase';
-import { Loader2 } from 'lucide-react';
+import { LoadingAnimation } from '@/components/loading-animation';
 
 export default function Home() {
   const [user, loading] = useAuthState(auth);
@@ -19,7 +19,7 @@ export default function Home() {
         </Link>
         <nav>
           {loading ? (
-             <Loader2 className="h-6 w-6 animate-spin"/>
+             <LoadingAnimation />
           ) : user ? (
             <UserNav />
           ) : (

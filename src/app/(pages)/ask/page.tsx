@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
 
@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { askSahayak } from "@/ai/flows/ask-sahayak";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 const FormSchema = z.object({
   question: z.string().min(10, {
@@ -113,7 +114,7 @@ export default function AskSahayakPage() {
                   />
                   <Button type="submit" disabled={loading || authLoading} className="w-full sm:w-auto bg-accent hover:bg-accent/90">
                     {loading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <LoadingAnimation />
                     ) : (
                       <Sparkles className="mr-2 h-4 w-4" />
                     )}
@@ -132,7 +133,7 @@ export default function AskSahayakPage() {
             <CardContent>
               {loading && (
                 <div className="flex items-center justify-center h-32">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  <LoadingAnimation />
                 </div>
               )}
               {answer && (

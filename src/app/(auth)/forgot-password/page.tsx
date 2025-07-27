@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {
   Form,
@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/page-header";
 import { auth } from "@/lib/firebase";
 import { sendPasswordResetEmail } from "firebase/auth";
+import { LoadingAnimation } from "@/components/loading-animation";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -68,7 +69,7 @@ export default function ForgotPasswordPage() {
           title="Forgot Password"
           description={sent ? "Check your email." : "Enter your email to receive a password reset link."}
         />
-        {sent ? (
+        {loading ? <div className="flex justify-center items-center"><LoadingAnimation /></div> : sent ? (
           <div className="text-center">
              <p className="text-muted-foreground">
               An email has been sent to your registered address with instructions on how to reset your password.
@@ -99,11 +100,7 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="w-full bg-accent hover:bg-accent/90"
               >
-                {loading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  "Send Reset Link"
-                )}
+                Send Reset Link
               </Button>
             </form>
           </Form>

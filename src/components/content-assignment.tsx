@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Link as LinkIcon, ArrowLeft } from "lucide-react";
 import { PageHeader } from "./page-header";
+import { LoadingAnimation } from "./loading-animation";
 
 export interface ContentDetails {
   pdfUrl: string;
@@ -125,15 +126,24 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
           return saveContent(classroomId, classroom?.name || "");
         });
         await Promise.all(classroomPromises);
-      } else {
+      } else if(addToLibrary) {
         await saveContent("", "");
       }
 
-      toast({
-        title: "Content Saved!",
-        description: "Your content has been saved and assigned.",
-      });
-      router.push("/home");
+
+      if (selectedClassrooms.length > 0 || addToLibrary) {
+         toast({
+          title: "Content Saved!",
+          description: "Your content has been saved and assigned.",
+        });
+        router.push("/home");
+      } else {
+         toast({
+          variant: "destructive",
+          title: "Nothing to Save",
+          description: "Please select a classroom or add to the library.",
+        });
+      }
     } catch (error) {
       console.error("Error saving content:", error);
       toast({
@@ -181,7 +191,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
               <div className="mt-2 space-y-2">
                 {loading || authLoading ? (
                   <div className="flex items-center space-x-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <LoadingAnimation />
                     <span>Loading classrooms...</span>
                   </div>
                 ) : classrooms.length > 0 ? (
