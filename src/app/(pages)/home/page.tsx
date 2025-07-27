@@ -10,12 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Loader2, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
-interface Classroom {
-  id: string;
-  name: string;
-  grade: string;
-}
+import { Logotype } from "@/components/icons";
 
 interface Content {
   id: string;
@@ -110,6 +105,9 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
+      <div className="flex items-center gap-4 mb-8">
+        <Logotype className="h-8 w-auto" />
+      </div>
       {loading || authLoading ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -200,4 +198,10 @@ export default function HomePage() {
       )}
     </div>
   );
+}
+
+interface Classroom {
+  id: string;
+  name: string;
+  grade: string;
 }

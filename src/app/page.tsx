@@ -1,11 +1,15 @@
+// src/app/page.tsx
+"use client";
 import { Button } from '@/components/ui/button';
 import { Logotype } from '@/components/icons';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/lib/firebase';
+import { Loader2 } from 'lucide-react';
 
 export default function Home() {
-  // TODO: Replace with actual authentication check
-  const isAuthenticated = false;
+  const [user, loading] = useAuthState(auth);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -14,7 +18,9 @@ export default function Home() {
           <Logotype className="h-6 w-auto" />
         </Link>
         <nav>
-          {isAuthenticated ? (
+          {loading ? (
+             <Loader2 className="h-6 w-6 animate-spin"/>
+          ) : user ? (
             <UserNav />
           ) : (
             <div className="flex items-center gap-4">

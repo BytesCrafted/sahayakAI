@@ -1,3 +1,5 @@
+// src/app/(pages)/layout.tsx
+"use client";
 import { Logotype } from "@/components/icons";
 import { Navigation } from "@/components/navigation";
 import {
@@ -12,10 +14,23 @@ import {
 import Link from "next/link";
 import { UserNav } from "@/components/user-nav";
 import { Button } from "@/components/ui/button";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/lib/firebase";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  // TODO: Replace with actual authentication check
-  const isAuthenticated = true;
+  const [user, loading] = useAuthState(auth);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
 
   return (
     <SidebarProvider>
@@ -28,7 +43,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarHeader>
           <Navigation />
           <SidebarFooter>
-            {isAuthenticated ? (
+            {loading ? (
+                <div className="flex justify-center items-center w-full">
+                    <Loader2 className="h-6 w-6 animate-spin"/>
+                </div>
+            ) : user ? (
               <UserNav />
             ) : (
               <div className="flex flex-col gap-2">

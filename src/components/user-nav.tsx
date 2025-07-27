@@ -1,3 +1,4 @@
+// src/components/user-nav.tsx
 "use client";
 
 import {
@@ -17,14 +18,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+
 
 export function UserNav() {
-  // TODO: Replace with actual user data
-  const user = {
-    displayName: "Teacher",
-    email: "teacher@school.com",
-    photoURL: "",
-  };
+  const [user] = useAuthState(auth);
+  const router = useRouter();
+  const { toast } = useToast();
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -33,16 +38,34 @@ export function UserNav() {
   };
 
   const handleLogout = async () => {
-    // TODO: Implement logout functionality
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+      });
+    }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.photoURL} alt={user.displayName} />
-            <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+            <AvatarFallback>{getInitials(user.displayName || 'User')}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
