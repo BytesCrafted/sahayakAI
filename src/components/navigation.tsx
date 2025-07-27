@@ -12,6 +12,7 @@ import {
   ChevronDown,
   BookOpen,
   Library,
+  PictureInPicture,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -53,6 +54,11 @@ const navItems = [
         href: "/content/study-material",
         icon: BookOpen,
         label: "Study Material",
+      },
+      {
+        href: "/content/visual-aid",
+        icon: PictureInPicture,
+        label: "Visual Aid Generator",
       },
     ],
   },
