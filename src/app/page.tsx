@@ -40,16 +40,19 @@ export default function Home() {
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline text-primary">
-                    Sahayak AI Assistant
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                    Revolutionizing Education with AI
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Your smart partner in education. Effortlessly generate worksheets, lesson plans, study materials, and quizzes.
+                  <p className="max-w-[700px] text-muted-foreground md:text-xl">
+                    SahayakAI is an AI-powered platform designed to assist educators and students with a suite of tools including lesson plan generation, quiz creation, and study material summarization.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg" className="bg-accent hover:bg-accent/90">
-                    <Link href="/login">Get Started</Link>
+                  <Button asChild className="bg-primary hover:bg-primary/90">
+                    <Link href="/dashboard">Get Started</Link>
+                  </Button>
+                  <Button asChild variant="secondary">
+                    <Link href="#features">Learn More</Link>
                   </Button>
                 </div>
               </div>
@@ -57,16 +60,13 @@ export default function Home() {
                 src="/sahayak_logo.png"
                 width="300"
                 height="300"
-                alt="SahayakAI Hero Logo"
-                className="mx-auto aspect-square overflow-hidden rounded-xl object-contain sm:w-full lg:order-last"
+                alt="SahayakAI Logo"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-contain sm:w-full lg:order-last lg:aspect-square"
               />
             </div>
           </div>
         </section>
       </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">&copy; 2024 SahayakAI. All rights reserved.</p>
-      </footer>
     </div>
   );
 }
