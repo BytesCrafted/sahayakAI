@@ -15,7 +15,7 @@ In many schools across India, a single teacher is often responsible for managing
 
 ## Key Features
 
-### 👩‍🏫 Teacher Dashboard
+### Teacher Dashboard
 - Create and manage **tasks** (daily, weekly, monthly, yearly).
 - **Create and manage classrooms** with:
   - Student lists
