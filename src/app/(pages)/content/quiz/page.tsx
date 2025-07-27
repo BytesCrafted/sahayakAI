@@ -65,10 +65,9 @@ export default function QuizGeneratorPage() {
     setGeneratedContent(null);
     try {
       const result = await generateQuiz(data);
-       if (result.url && result.quiz_json_url) {
+       if (result.url) {
         setGeneratedContent({
           pdfUrl: result.url,
-          evaluationJsonUrl: result.quiz_json_url,
           title: data.topic || "Quiz",
           topic: data.topic || "General",
           subject: data.subject,
