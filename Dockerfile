@@ -5,7 +5,7 @@ FROM node:16-buster
 RUN mkdir /app
 WORKDIR /app
 
-# Copy package files and install
+# Copy package files and install 
 COPY package.json ./
 RUN npm install
 
