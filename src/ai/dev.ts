@@ -7,3 +7,4 @@ import '@/ai/flows/generate-quiz.ts';
 import '@/ai/flows/generate-lesson-plan.ts';
 import '@/ai/flows/generate-worksheet-from-image.ts';
 import '@/ai/flows/generate-visual-aid.ts';
+import '@/ai/flows/evaluate-quiz.ts';

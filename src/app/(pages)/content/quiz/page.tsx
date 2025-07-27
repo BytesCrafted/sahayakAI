@@ -29,8 +29,8 @@ import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { generateQuiz, GenerateQuizInput } from "@/ai/flows/generate-quiz";
 import { Textarea } from "@/components/ui/textarea";
-import { ContentAssignment, ContentDetails } from "@/components/content-assignment";
 import { LoadingAnimation } from "@/components/loading-animation";
+import { QuizEvaluation, QuizDetails } from "@/components/quiz-evaluation";
 
 const FormSchema = z.object({
   subject: z.string().min(3, {
@@ -47,7 +47,7 @@ const FormSchema = z.object({
 
 export default function QuizGeneratorPage() {
   const [loading, setLoading] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<ContentDetails | null>(null);
+  const [generatedQuiz, setGeneratedQuiz] = useState<QuizDetails | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -62,18 +62,17 @@ export default function QuizGeneratorPage() {
 
   async function onSubmit(data: GenerateQuizInput) {
     setLoading(true);
-    setGeneratedContent(null);
+    setGeneratedQuiz(null);
     try {
       const result = await generateQuiz(data);
-       if (result.url) {
-        setGeneratedContent({
+       if (result.url && result.quiz_json_url) {
+        setGeneratedQuiz({
           pdfUrl: result.url,
+          evaluationJsonUrl: result.quiz_json_url,
           title: data.topic || "Quiz",
           topic: data.topic || "General",
           subject: data.subject,
           grade: data.grade,
-          contentType: "quiz",
-          userPrompt: data.description || "",
         });
         toast({
           title: "Success!",
@@ -94,8 +93,8 @@ export default function QuizGeneratorPage() {
     }
   }
 
-  if (generatedContent) {
-    return <ContentAssignment content={generatedContent} onBack={() => setGeneratedContent(null)} />;
+  if (generatedQuiz) {
+    return <QuizEvaluation quiz={generatedQuiz} onBack={() => setGeneratedQuiz(null)} />;
   }
   
   if (loading) {

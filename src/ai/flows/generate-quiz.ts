@@ -27,6 +27,7 @@ export type GenerateQuizInput = z.infer<typeof GenerateQuizInputSchema>;
 
 const GenerateQuizOutputSchema = z.object({
   url: z.string().url(),
+  quiz_json_url: z.string().url(),
 });
 export type GenerateQuizOutput = z.infer<
   typeof GenerateQuizOutputSchema
@@ -60,6 +61,9 @@ const generateQuizFlow = ai.defineFlow(
     }
 
     const result = await response.json();
-    return { url: result.url };
+    return { 
+        url: result.url,
+        quiz_json_url: result.quiz_json_url 
+    };
   }
 );
