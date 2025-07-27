@@ -15,7 +15,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center justify-center" aria-label="SahayakAI Home">
-          <img src="/sahayak_logo.png" alt="SahayakAI Logo" className="h-8 w-auto" />
+          <Logotype className="h-6 w-auto" />
         </Link>
         <nav>
           {loading ? (
@@ -55,8 +55,8 @@ export default function Home() {
               </div>
               <img
                 src="/sahayak_logo.png"
-                width="400"
-                height="400"
+                width="300"
+                height="300"
                 alt="SahayakAI Hero Logo"
                 className="mx-auto aspect-square overflow-hidden rounded-xl object-contain sm:w-full lg:order-last"
               />
