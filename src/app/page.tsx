@@ -15,7 +15,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center justify-center" aria-label="SahayakAI Home">
-          <Logotype className="h-6 w-auto" />
+          <img src="/sahayak_logo.png" alt="SahayakAI Logo" className="h-8 w-auto" />
         </Link>
         <nav>
           {loading ? (

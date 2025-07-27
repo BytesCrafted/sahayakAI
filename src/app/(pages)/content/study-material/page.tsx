@@ -101,7 +101,7 @@ export default function StudyMaterialPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <LoadingAnimation />
+        <LoadingAnimation animationType="gemini"/>
       </div>
     );
   }

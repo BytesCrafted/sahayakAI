@@ -95,7 +95,7 @@ export default function GenerateVisualAidPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <LoadingAnimation />
+        <LoadingAnimation animationType="gemini"/>
       </div>
     );
   }
