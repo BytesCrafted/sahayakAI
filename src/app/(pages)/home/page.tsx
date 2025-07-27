@@ -129,14 +129,17 @@ export default function HomePage() {
             {classrooms.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {classrooms.map((classroom) => (
-                  <Card key={classroom.id}>
-                    <CardHeader>
-                      <CardTitle>{classroom.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">Grade: {classroom.grade}</p>
-                    </CardContent>
-                  </Card>
+                  <Link key={classroom.id} href={`/classrooms/${classroom.id}`} passHref>
+                    <Card className="h-full hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+                      <CardHeader>
+                        <CardTitle>{classroom.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground">Grade: {classroom.grade}</p>
+                         <p className="text-muted-foreground">Subject: {classroom.subject}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 ))}
               </div>
             ) : (
@@ -204,4 +207,5 @@ interface Classroom {
   id: string;
   name: string;
   grade: string;
+  subject: string;
 }
