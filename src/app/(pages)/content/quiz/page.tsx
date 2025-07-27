@@ -30,7 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import { generateQuiz, GenerateQuizInput } from "@/ai/flows/generate-quiz";
 import { Textarea } from "@/components/ui/textarea";
 import { LoadingAnimation } from "@/components/loading-animation";
-import { QuizEvaluation, QuizDetails } from "@/components/quiz-evaluation";
+import { ContentAssignment, ContentDetails } from "@/components/content-assignment";
 
 const FormSchema = z.object({
   subject: z.string().min(3, {
@@ -47,7 +47,7 @@ const FormSchema = z.object({
 
 export default function QuizGeneratorPage() {
   const [loading, setLoading] = useState(false);
-  const [generatedQuiz, setGeneratedQuiz] = useState<QuizDetails | null>(null);
+  const [generatedContent, setGeneratedContent] = useState<ContentDetails | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -62,17 +62,19 @@ export default function QuizGeneratorPage() {
 
   async function onSubmit(data: GenerateQuizInput) {
     setLoading(true);
-    setGeneratedQuiz(null);
+    setGeneratedContent(null);
     try {
       const result = await generateQuiz(data);
        if (result.url && result.quiz_json_url) {
-        setGeneratedQuiz({
+        setGeneratedContent({
           pdfUrl: result.url,
           evaluationJsonUrl: result.quiz_json_url,
           title: data.topic || "Quiz",
           topic: data.topic || "General",
           subject: data.subject,
           grade: data.grade,
+          contentType: "quiz",
+          userPrompt: data.description || "",
         });
         toast({
           title: "Success!",
@@ -93,8 +95,8 @@ export default function QuizGeneratorPage() {
     }
   }
 
-  if (generatedQuiz) {
-    return <QuizEvaluation quiz={generatedQuiz} onBack={() => setGeneratedQuiz(null)} />;
+  if (generatedContent) {
+    return <ContentAssignment content={generatedContent} onBack={() => setGeneratedContent(null)} />;
   }
   
   if (loading) {

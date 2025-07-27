@@ -28,6 +28,14 @@ import { BookOpen, Users, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LoadingAnimation } from "@/components/loading-animation";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { QuizEvaluation, QuizDetails } from "@/components/quiz-evaluation";
 
 
 interface Classroom {
@@ -46,6 +54,7 @@ interface Content {
     title: string;
     topic: string;
     url: string;
+    quiz_json_url?: string;
   };
   content_file_url: string;
   content_id: number;
@@ -202,16 +211,40 @@ export default function ClassroomDetailPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow flex flex-col justify-end">
-                  <Button asChild variant="outline" className="mt-auto">
-                    <Link
-                      href={item.content_data?.url || item.content_file_url || "#"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      View Content
-                    </Link>
-                  </Button>
+                  {item.content_type === 'quiz' && item.content_data.quiz_json_url ? (
+                     <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="mt-auto">
+                           <BookOpen className="mr-2 h-4 w-4" />
+                           Evaluate Quiz
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[80vw]">
+                         <QuizEvaluation
+                          quiz={{
+                            pdfUrl: item.content_data.url,
+                            evaluationJsonUrl: item.content_data.quiz_json_url,
+                            title: item.content_data.title,
+                            topic: item.content_data.topic,
+                            subject: item.subject,
+                            grade: item.grade.toString(),
+                          }}
+                           onBack={() => {}} // Not needed in dialog
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <Button asChild variant="outline" className="mt-auto">
+                      <Link
+                        href={item.content_data?.url || item.content_file_url || "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <BookOpen className="mr-2 h-4 w-4" />
+                        View Content
+                      </Link>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}

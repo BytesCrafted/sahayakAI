@@ -29,6 +29,7 @@ import {
   UploadCloud,
   CheckCircle,
   XCircle,
+  Loader2,
 } from "lucide-react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -77,6 +78,7 @@ export function QuizEvaluation({ quiz, onBack }: QuizEvaluationProps) {
     handleSubmit,
     setValue,
     formState: { errors, isValid },
+    reset,
   } = form;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,6 +88,12 @@ export function QuizEvaluation({ quiz, onBack }: QuizEvaluationProps) {
       setFileName(file.name);
     }
   };
+  
+  const handleReset = () => {
+    setEvaluationResult(null);
+    setFileName(null);
+    reset();
+  }
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setLoading(true);
@@ -122,15 +130,11 @@ export function QuizEvaluation({ quiz, onBack }: QuizEvaluationProps) {
   };
 
   return (
-    <>
-      <PageHeader
-        title="Quiz Evaluation"
-        description="Upload a student's submission to evaluate it against the generated quiz."
-      />
+    <div className="max-h-[80vh] overflow-y-auto p-1">
       <div className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>{quiz.title}</CardTitle>
+             <DialogTitle>Quiz: {quiz.title}</DialogTitle>
             <CardDescription>
               {quiz.subject} - Grade {quiz.grade}
             </CardDescription>
@@ -197,12 +201,11 @@ export function QuizEvaluation({ quiz, onBack }: QuizEvaluationProps) {
                   )}
                 />
               </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={onBack}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
-                </Button>
+              <CardFooter className="flex justify-end">
                 <Button type="submit" disabled={!isValid || loading}>
-                  {loading && <LoadingAnimation />}
+                  {loading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
                   Evaluate Submission
                 </Button>
               </CardFooter>
@@ -258,13 +261,13 @@ export function QuizEvaluation({ quiz, onBack }: QuizEvaluationProps) {
               </div>
             </CardContent>
              <CardFooter>
-                <Button onClick={onBack}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Back to Generator
+                <Button variant="outline" onClick={handleReset}>
+                  Evaluate Another
                 </Button>
               </CardFooter>
           </Card>
         )}
       </div>
-    </>
+    </div>
   );
 }

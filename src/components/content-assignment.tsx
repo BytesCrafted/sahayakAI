@@ -18,6 +18,7 @@ import { LoadingAnimation } from "./loading-animation";
 
 export interface ContentDetails {
   pdfUrl: string;
+  evaluationJsonUrl?: string; // Optional for quizzes
   title: string;
   topic: string;
   subject: string;
@@ -95,7 +96,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
     setSaving(true);
     try {
       const saveContent = async (classroomId: string, classroomName: string) => {
-        const contentDoc = {
+         const contentDoc: any = {
           add_to_library_ind: addToLibrary,
           content_data: {
             title: content.title,
@@ -117,6 +118,11 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
           upload_file_url: null,
           user_prompt: content.userPrompt,
         };
+        
+        if (content.contentType === 'quiz' && content.evaluationJsonUrl) {
+          contentDoc.content_data.quiz_json_url = content.evaluationJsonUrl;
+        }
+        
         await addDoc(collection(db, "contents"), contentDoc);
       };
 
@@ -227,7 +233,7 @@ export function ContentAssignment({ content, onBack }: ContentAssignmentProps) {
              <Button variant="outline" onClick={onBack}>
               <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button onClick={handleSave} disabled={saving || (!selectedClassrooms.length && !addToLibrary)}>
               {saving ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : null}
